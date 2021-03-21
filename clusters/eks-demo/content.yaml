@@ -1,4 +1,3 @@
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -21,10 +20,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8000
-      targetPort: http
-      protocol: TCP
-      name: http
+  - port: 8000
+    targetPort: http
+    protocol: TCP
+    name: http
   selector:
     app.kubernetes.io/name: content
     app.kubernetes.io/instance: content
@@ -49,42 +48,38 @@ spec:
         app.kubernetes.io/instance: content
     spec:
       serviceAccountName: content
-      securityContext:
-        {}
+      securityContext: {}
       containers:
-        - name: content
-          securityContext:
-            {}
-          image: "202581749740.dkr.ecr.eu-west-1.amazonaws.com/test:0.1" # {"$imagepolicy": "flux-system:content"}
-          imagePullPolicy: IfNotPresent
-          envFrom:
-          - configMapRef:
-              name: content
-          ports:
-            - name: http
-              containerPort: 8000
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources: {}
+      - name: content
+        securityContext: {}
+        image: "202581749740.dkr.ecr.eu-west-1.amazonaws.com/test:1.0.1" # {"$imagepolicy": "flux-system:content"}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: content
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources: {}
 ---
-
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: content
 spec:
   rules:
-    - http:
-        paths:
-          - path: /content
-            backend:
-              serviceName: content
-              servicePort: 8000
-
+  - http:
+      paths:
+      - path: /content
+        backend:
+          serviceName: content
+          servicePort: 8000
